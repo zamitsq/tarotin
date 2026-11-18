@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Tarot Mistis — Baca Nasibmu ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #d4a853;
+            --gold-light: #f0d890;
+            --gold-dark: #a07830;
+            --purple-deep: #1a0a2e;
+            --purple-mid: #2d1b4e;
+            --purple-light: #4a2c7a;
+            --bg-dark: #0a0612;
+            --text-light: #e8dcc8;
+            --text-muted: #9a8e7a;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #stars-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(74, 44, 122, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(30, 58, 95, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(212, 168, 83, 0.05) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+
+        .header__icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header__title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.8rem, 5vw, 3.2rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(212, 168, 83, 0.3));
+            margin-bottom: 8px;
+        }
+
+        .header__subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .header__divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 15px auto;
+        }
+
+        .moon-phases {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            opacity: 0.4;
+        }
+
+        /* ===== PHASES / STEPS ===== */
+        .phase { display: none; }
+        .phase.active { display: block; }
+
+        /* ===== INTRO ===== */
+        .intro {
+            text-align: center;
+            padding: 15px 20px 25px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .intro__text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            opacity: 0.85;
+        }
+
+        .intro__instruction {
+            margin-top: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        /* ===== SPREAD SELECTOR ===== */
+        .spread-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 auto 30px;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .spread-btn {
+            background: linear-gradient(135deg, rgba(74, 44, 122, 0.4), rgba(26, 10, 46, 0.6));
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            color: var(--text-muted);
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            padding: 10px 22px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            letter-spacing: 1px;
+        }
+
+        .spread-btn:hover, .spread-btn.active {
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.2), rgba(74, 44, 122, 0.5));
+            border-color: var(--gold);
+            color: var(--gold-light);
+            box-shadow: 0 0 20px rgba(212, 168, 83, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* ===== BUTTON STYLES ===== */
+        .btn-mystic {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 14px 45px;
+            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.1), rgba(74, 44, 122, 0.3));
+            color: var(--gold-light);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-mystic::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            background: radial-gradient(circle, rgba(212, 168, 83, 0.3), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            border-radius: 50%;
+        }
+
+        .btn-mystic:hover::before { width: 300px; height: 300px; }
+        .btn-mystic:hover {
+            box-shadow: 0 0 30px rgba(212, 168, 83, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .btn-mystic:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn-mystic:disabled:hover::before { width: 0; height: 0; }
+
+        .btn-secondary {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            padding: 10px 30px;
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+
+        .action-area {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* ===== CARD POOL (pick your cards) ===== */
+        .pick-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .pick-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .pick-header__title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .pick-header__counter {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .pick-header__counter span {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .card-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            max-width: 1000px;
+            margin: 0 auto 20px;
+        }
+
+        /* ===== TAROT CARD (Pool - small) ===== */
+        .pool-card {
+            width: 70px;
+            height: 110px;
+            cursor: pointer;
+            perspective: 600px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .pool-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            z-index: 10;
+        }
+
+        .pool-card.picked {
+            transform: translateY(-12px) scale(1.1);
+            z-index: 20;
+        }
+
+        .pool-card.picked .pool-card__face {
+            border-color: var(--gold);
+            box-shadow: 
+                0 0 25px rgba(212, 168, 83, 0.5),
+                0 0 50px rgba(212, 168, 83, 0.2),
+                inset 0 0 20px rgba(212, 168, 83, 0.1);
+        }
+
+        .pool-card.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pool-card.fade-out {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+
+        .pool-card__face {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, var(--purple-deep), var(--purple-mid));
+            border: 1.5px solid rgba(212, 168, 83, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .pool-card__face::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 1px solid rgba(212, 168, 83, 0.15);
+            border-radius: 5px;
+        }
+
+        .pool-card__symbol {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 6px rgba(212, 168, 83, 0.3));
+            animation: card-shimmer 3s ease-in-out infinite;
+        }
+
+        .pool-card__number {
+            font-family: 'Cinzel', serif;
+            font-size: 0.5rem;
+            color: var(--gold);
+            opacity: 0.4;
+            margin-top: 3px;
+            letter-spacing: 1px;
+        }
+
+        .pool-card .pick-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--purple-deep);
+            font-family: 'Cinzel', serif;
+            box-shadow: 0 0 10px rgba(212, 168, 83, 0.5);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pool-card.picked .pick-badge {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ===== SELECTED CARDS PREVIEW ===== */
+        .selected-preview {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+            perspective: 1200px;
+            min-height: 60px;
+        }
+
+        /* ===== REVEALED CARD (big) ===== */
+        .reveal-card {
+            width: 140px;
+            height: 220px;
+            perspective: 800px;
+            position: relative;
+        }
+
+        .reveal-card__inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .reveal-card.flipped .reveal-card__inner {
+            transform: rotateY(180deg);
+        }
+
+        .reveal-card__face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .reveal-card__back {
+            background: linear-gradient(145deg, var(--purple-deep), var(--purple-mid));
+            border: 2px solid rgba(212, 168, 83, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(74, 44, 122, 0.3);
+        }
+
+        .reveal-card__back::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(212, 168, 83, 0.25);
+            border-radius: 8px;
+        }
+
+        .reveal-card__back-symbol {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 10px rgba(212, 168, 83, 0.4));
+        }
+
+        .reveal-card__front {
+            transform: rotateY(180deg);
+            background: linear-gradient(170deg, #1a1025, #0d0818);
+            border: 2px solid var(--gold);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 5px 30px rgba(212, 168, 83, 0.2), inset 0 0 50px rgba(212, 168, 83, 0.05);
+        }
+
+        .reveal-card__front::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            border-radius: 8px;
+        }
+
+        .reveal-card__emoji {
+            font-size: 2.8rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 8px rgba(212, 168, 83, 0.3));
+        }
+
+        .reveal-card__name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            color: var(--gold-light);
+            font-weight: 700;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .reveal-card__numeral {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 0.6rem;
+            color: var(--gold);
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+
+        .reveal-card__position {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ===== READING RESULT ===== */
+        .reading-result {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reading-result.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reading-result__title {
+            text-align: center;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 25px;
+            letter-spacing: 3px;
+        }
+
+        .reading-card {
+            background: linear-gradient(135deg, rgba(45, 27, 78, 0.5), rgba(26, 10, 46, 0.7));
+            border: 1px solid rgba(212, 168, 83, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .reading-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .reading-card__header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .reading-card__icon { font-size: 2rem; }
+
+        .reading-card__meta { flex: 1; }
+
+        .reading-card__position {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .reading-card__card-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem;
+            color: var(--gold-light);
+            font-weight: 700;
+        }
+
+        .reading-card__divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.3), transparent);
+            margin-bottom: 15px;
+        }
+
+        .reading-card__meaning {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        .reading-card__keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .keyword-tag {
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            border: 1px solid rgba(212, 168, 83, 0.25);
+            border-radius: 20px;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+
+        .overall-reading {
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.08), rgba(74, 44, 122, 0.3));
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .overall-reading__title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .overall-reading__text {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            font-style: italic;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-oracle {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading-oracle.active { display: block; }
+
+        .loading-oracle__spinner {
+            font-size: 3rem;
+            animation: float 1.5s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+
+        .loading-oracle__text {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            animation: pulse-glow 1.5s ease-in-out infinite;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(212, 168, 83, 0.1);
+            margin-top: 20px;
+        }
+
+        .footer__text { font-size: 0.85rem; color: var(--text-muted); font-style: italic; }
+        .footer__disclaimer { font-size: 0.75rem; color: rgba(154, 142, 122, 0.5); margin-top: 10px; }
+
+        /* ===== PARTICLES ===== */
+        .particle {
+            position: fixed;
+            width: 3px; height: 3px;
+            background: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.7; text-shadow: 0 0 10px rgba(212, 168, 83, 0); }
+            50% { opacity: 1; text-shadow: 0 0 20px rgba(212, 168, 83, 0.3); }
+        }
+
+        @keyframes card-shimmer {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.3) rotate(-10deg); }
+            70% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0); }
+        }
+
+        @keyframes shuffleCards {
+            0% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-15px) rotate(-3deg); }
+            50% { transform: translateX(0) rotate(0); }
+            75% { transform: translateX(15px) rotate(3deg); }
+            100% { transform: translateX(0) rotate(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .pool-card { width: 55px; height: 88px; }
+            .pool-card__symbol { font-size: 1.2rem; }
+            .card-pool { gap: 6px; }
+            .reveal-card { width: 110px; height: 175px; }
+            .reveal-card__emoji { font-size: 2.2rem; }
+            .reveal-card__name { font-size: 0.65rem; }
+            .header { padding: 25px 15px 15px; }
+            .spread-btn { font-size: 0.75rem; padding: 8px 14px; }
+        }
+
+        @media (max-width: 400px) {
+            .pool-card { width: 48px; height: 76px; }
+            .pool-card__symbol { font-size: 1rem; }
+            .reveal-card { width: 90px; height: 145px; }
+        }
+
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+
+        /* Selection highlight pulse */
+        @keyframes pick-pulse {
+            0% { box-shadow: 0 0 15px rgba(212, 168, 83, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(212, 168, 83, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(212, 168, 83, 0.3); }
+        }
+
+        .pool-card.picked .pool-card__face {
+            animation: pick-pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<div class="content-wrapper">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header__icon">🌙</div>
+        <h1 class="header__title">Tarot Mistis</h1>
+        <p class="header__subtitle">Biarkan alam semesta berbicara kepadamu</p>
+        <div class="header__divider"></div>
+        <div class="moon-phases">🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑</div>
+    </header>
+
+    <!-- ==================== PHASE 1: SELECT SPREAD ==================== -->
+    <div class="phase active" id="phase1">
+        <section class="intro">
+            <p class="intro__text">
+                Tarik napas dalam-dalam, tenangkan pikiranmu, dan fokuslah pada pertanyaan yang ada di hatimu.
+                Kartu-kartu ini akan membantumu menemukan jawaban dari dalam dirimu sendiri.
+            </p>
+            <p class="intro__instruction">✦ Pilih Jenis Bacaan ✦</p>
+        </section>
+
+        <div class="spread-selector">
+            <button class="spread-btn active" data-spread="1" onclick="selectSpread(1)">🃏 Satu Kartu</button>
+            <button class="spread-btn" data-spread="3" onclick="selectSpread(3)">🔮 Tiga Kartu</button>
+            <button class="spread-btn" data-spread="5" onclick="selectSpread(5)">⭐ Lima Kartu</button>
+        </div>
+
+        <div class="action-area">
+            <button class="btn-mystic" onclick="startPicking()">✦ Kocok Kartu ✦</button>
+        </div>
+    </div>
+
+    <!-- ==================== PHASE 2: PICK CARDS ==================== -->
+    <div class="phase" id="phase2">
+        <div class="pick-section">
+            <div class="pick-header">
+                <p class="pick-header__title" id="pickTitle">✦ Pilih 1 kartu yang memanggilmu ✦</p>
+                <p class="pick-header__counter" id="pickCounter">Kartu dipilih: <span>0</span> / <span>1</span></p>
+            </div>
+
+            <div class="card-pool" id="cardPool"></div>
+
+            <div class="action-area">
+                <button class="btn-mystic" id="btnConfirm" onclick="confirmSelection()" disabled>
+                    ✦ Baca Kartu Terpilih ✦
+                </button>
+                <br>
+                <button class="btn-secondary" onclick="resetAll()" style="margin-top:12px;">↻ Mulai Ulang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== PHASE 3: REVEAL ==================== -->
+    <div class="phase" id="phase3">
+        <section class="intro">
+            <p class="intro__instruction" id="revealInstruction">✦ Klik kartu untuk membuka ramalanmu ✦</p>
+        </section>
+
+        <div class="selected-preview" id="selectedPreview"></div>
+
+        <div class="action-area" style="margin-top: 30px;">
+            <button class="btn-secondary" id="btnRevealAll" onclick="revealAllCards()">☽ Buka Semua Kartu ☾</button>
+        </div>
+
+        <!-- LOADING -->
+        <div class="loading-oracle" id="loadingOracle">
+            <div class="loading-oracle__spinner">🔮</div>
+            <p class="loading-oracle__text">Alam semesta sedang berbisik...</p>
+        </div>
+
+        <!-- READING RESULT -->
+        <div class="reading-result" id="readingResult"></div>
+
+        <div class="action-area" id="resetArea" style="display:none;">
+            <button class="btn-mystic" onclick="resetAll()">✦ Bacaan Baru ✦</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p class="footer__text">✨ Percayalah pada intuisimu ✨</p>
+        <p class="footer__disclaimer">Tarot hanya sebagai panduan refleksi diri, bukan penentu takdir.</p>
+    </footer>
+</div>
+
+<script>
+// ===== FULL 78 CARD TAROT DECK =====
+const tarotDeck = [
+    // ======= MAJOR ARCANA (22 kartu) =======
+    { name: "Si Bodoh", numeral: "0", emoji: "🃏", suit: "Major", keywords: ["Awal Baru", "Spontanitas", "Keberanian"], meaning: "Kamu berada di ambang petualangan baru. Lepaskan ketakutan dan percayalah pada proses. Langkah pertama selalu yang paling berani, dan alam semesta mendukungmu." },
+    { name: "Sang Pesulap", numeral: "I", emoji: "🎩", suit: "Major", keywords: ["Manifestasi", "Kekuatan", "Kreativitas"], meaning: "Semua yang kamu butuhkan sudah ada dalam dirimu. Kini saatnya menggunakan bakat dan sumber dayamu. Fokuslah pada tujuanmu — kamu memiliki kekuatan untuk mewujudkannya." },
+    { name: "Pendeta Tinggi", numeral: "II", emoji: "🌙", suit: "Major", keywords: ["Intuisi", "Misteri", "Kebijaksanaan Batin"], meaning: "Dengarkan suara hatimu yang paling dalam. Ada pengetahuan tersembunyi yang menanti untuk terungkap. Percayalah pada intuisimu — jawabannya ada di dalam, bukan di luar." },
+    { name: "Sang Permaisuri", numeral: "III", emoji: "👑", suit: "Major", keywords: ["Kelimpahan", "Kasih Sayang", "Kesuburan"], meaning: "Energi cinta dan kelimpahan mengelilingimu. Rawatlah hubunganmu dan dirimu sendiri dengan penuh kasih. Ini adalah waktu untuk bertumbuh dan berkembang." },
+    { name: "Sang Kaisar", numeral: "IV", emoji: "🏛️", suit: "Major", keywords: ["Stabilitas", "Otoritas", "Struktur"], meaning: "Bangunlah fondasi yang kuat. Disiplin dan struktur akan membawamu menuju keberhasilan. Kamu memiliki kemampuan untuk menciptakan keamanan dan kestabilan." },
+    { name: "Sang Hierofant", numeral: "V", emoji: "📿", suit: "Major", keywords: ["Tradisi", "Bimbingan", "Kepercayaan"], meaning: "Carilah kebijaksanaan dari tradisi dan guru. Terkadang jalan yang sudah teruji waktu adalah yang terbaik. Buka hatimu untuk belajar dari yang lebih berpengalaman." },
+    { name: "Sang Kekasih", numeral: "VI", emoji: "💕", suit: "Major", keywords: ["Cinta", "Pilihan", "Keharmonisan"], meaning: "Cinta dan koneksi mendalam menanti. Kamu dihadapkan pada pilihan penting — ikutilah hatimu. Keselarasan antara pikiran dan perasaan akan menuntunmu." },
+    { name: "Kereta Perang", numeral: "VII", emoji: "⚔️", suit: "Major", keywords: ["Kemenangan", "Tekad", "Kendali"], meaning: "Kemenangan ada di depan mata! Tetap fokus dan kendalikan emosimu. Dengan tekad yang kuat, tidak ada hambatan yang tidak bisa kamu lalui." },
+    { name: "Kekuatan", numeral: "VIII", emoji: "🦁", suit: "Major", keywords: ["Keberanian", "Kesabaran", "Ketangguhan"], meaning: "Kekuatan sejati bukan tentang otot, tapi keberanian hati. Hadapi tantanganmu dengan lembut namun tegas. Kamu jauh lebih kuat dari yang kamu kira." },
+    { name: "Sang Pertapa", numeral: "IX", emoji: "🏔️", suit: "Major", keywords: ["Refleksi", "Pencarian", "Kebijaksanaan"], meaning: "Luangkan waktu untuk menyendiri dan merenung. Jawabannya akan datang dalam keheningan. Ini bukan waktu untuk terburu-buru — biarkan kebijaksanaan menemukanmu." },
+    { name: "Roda Keberuntungan", numeral: "X", emoji: "☸️", suit: "Major", keywords: ["Perubahan", "Siklus", "Takdir"], meaning: "Perubahan besar sedang berputar ke arahmu. Terima siklus hidup dengan lapang dada. Yang turun akan naik kembali — percayalah pada ritme alam semesta." },
+    { name: "Keadilan", numeral: "XI", emoji: "⚖️", suit: "Major", keywords: ["Keseimbangan", "Kebenaran", "Karma"], meaning: "Apa yang kamu tabur akan kamu tuai. Bertindaklah dengan jujur dan adil. Keseimbangan akan dipulihkan — kebenaran selalu menemukan jalannya." },
+    { name: "Sang Tergantung", numeral: "XII", emoji: "🔄", suit: "Major", keywords: ["Penyerahan", "Perspektif Baru", "Jeda"], meaning: "Lihat situasimu dari sudut yang berbeda. Terkadang melepaskan kendali justru memberimu kebebasan. Bersabarlah — pengorbananmu akan berbuah." },
+    { name: "Kematian", numeral: "XIII", emoji: "🦋", suit: "Major", keywords: ["Transformasi", "Pembaruan", "Akhir & Awal"], meaning: "Jangan takut — ini bukan tentang akhir, melainkan transformasi. Lepaskan yang lama agar yang baru bisa tumbuh. Dari abu, burung phoenix bangkit kembali." },
+    { name: "Kesederhanaan", numeral: "XIV", emoji: "⏳", suit: "Major", keywords: ["Keseimbangan", "Harmoni", "Moderasi"], meaning: "Temukan jalan tengah dalam segala hal. Kesabaran dan keseimbangan adalah kuncinya. Campurkan elemen-elemen hidupmu dengan harmoni." },
+    { name: "Si Iblis", numeral: "XV", emoji: "⛓️", suit: "Major", keywords: ["Belenggu", "Godaan", "Bayangan"], meaning: "Periksa apa yang mengikatmu — kebiasaan buruk, ketakutan, atau hubungan toxic. Kamu memiliki kekuatan untuk membebaskan diri." },
+    { name: "Menara", numeral: "XVI", emoji: "⚡", suit: "Major", keywords: ["Guncangan", "Kebangkitan", "Pembebasan"], meaning: "Perubahan mendadak mungkin mengejutkan, tapi ini diperlukan. Yang rapuh akan runtuh agar yang kuat bisa dibangun." },
+    { name: "Bintang", numeral: "XVII", emoji: "⭐", suit: "Major", keywords: ["Harapan", "Inspirasi", "Pemulihan"], meaning: "Setelah badai, bintang-bintang bersinar terang. Harapan dan penyembuhan menghampirimu. Percayalah bahwa hal-hal indah sedang menuju ke arahmu." },
+    { name: "Bulan", numeral: "XVIII", emoji: "🌕", suit: "Major", keywords: ["Ilusi", "Mimpi", "Ketidakpastian"], meaning: "Tidak semua yang terlihat adalah kenyataan. Navigasilah melalui kabut dengan intuisimu. Mimpi-mimpimu menyimpan pesan penting." },
+    { name: "Matahari", numeral: "XIX", emoji: "☀️", suit: "Major", keywords: ["Kebahagiaan", "Vitalitas", "Keberhasilan"], meaning: "Cahaya dan kehangatan menyelimutimu! Ini adalah waktu kebahagiaan, keberhasilan, dan optimisme. Bersinar teranglah — dunia membutuhkan cahayamu." },
+    { name: "Pengadilan", numeral: "XX", emoji: "📯", suit: "Major", keywords: ["Kebangkitan", "Panggilan", "Evaluasi"], meaning: "Dengarkan panggilan jiwamu. Ini saatnya evaluasi dan kebangkitan. Maafkan masa lalu, rangkul masa kini, dan melangkahlah menuju versi terbaikmu." },
+    { name: "Dunia", numeral: "XXI", emoji: "🌍", suit: "Major", keywords: ["Penyelesaian", "Pencapaian", "Keutuhan"], meaning: "Satu siklus besar telah selesai. Rayakan pencapaianmu! Dunia terbuka lebar di hadapanmu — bersiaplah untuk bab selanjutnya." },
+
+    // ======= MINOR ARCANA - CANGKIR / Cups (14 kartu) =======
+    { name: "As Cangkir", numeral: "As", emoji: "🏆", suit: "Cangkir", keywords: ["Cinta Baru", "Emosi", "Koneksi"], meaning: "Cinta baru atau emosi yang mendalam sedang memasuki hidupmu. Buka hatimu untuk menerima keindahan yang datang." },
+    { name: "Dua Cangkir", numeral: "II", emoji: "🥂", suit: "Cangkir", keywords: ["Kemitraan", "Daya Tarik", "Persatuan"], meaning: "Koneksi yang kuat terbentuk — bisa romantis atau persahabatan sejati. Hargai hubungan yang seimbang dan saling menghormati." },
+    { name: "Tiga Cangkir", numeral: "III", emoji: "🎉", suit: "Cangkir", keywords: ["Perayaan", "Persahabatan", "Komunitas"], meaning: "Saatnya merayakan! Lingkaran pertemananmu membawa kebahagiaan. Nikmati kebersamaan dan rasa syukur." },
+    { name: "Empat Cangkir", numeral: "IV", emoji: "😔", suit: "Cangkir", keywords: ["Kebosanan", "Kontemplasi", "Peluang Terlewat"], meaning: "Kamu mungkin merasa jenuh atau tidak puas. Buka matamu — ada peluang di sekitarmu yang belum kamu sadari. Jangan terlalu terpaku pada kekecewaan." },
+    { name: "Lima Cangkir", numeral: "V", emoji: "😢", suit: "Cangkir", keywords: ["Kehilangan", "Duka", "Penyesalan"], meaning: "Rasa kehilangan memang menyakitkan, tapi lihatlah apa yang masih tersisa. Di balik kesedihan, masih ada harapan dan cinta yang menunggumu." },
+    { name: "Enam Cangkir", numeral: "VI", emoji: "🧒", suit: "Cangkir", keywords: ["Nostalgia", "Kenangan", "Kepolosan"], meaning: "Kenangan masa kecil atau masa lalu muncul kembali. Ambil pelajaran indah dari masa lalu, tapi jangan terjebak di sana." },
+    { name: "Tujuh Cangkir", numeral: "VII", emoji: "💭", suit: "Cangkir", keywords: ["Fantasi", "Ilusi", "Pilihan"], meaning: "Banyak pilihan dan mimpi di hadapanmu, tapi tidak semuanya nyata. Bedakan antara fantasi dan kenyataan sebelum mengambil keputusan." },
+    { name: "Delapan Cangkir", numeral: "VIII", emoji: "🚶", suit: "Cangkir", keywords: ["Meninggalkan", "Pencarian", "Keberanian"], meaning: "Terkadang pergi meninggalkan yang sudah dikenal membutuhkan keberanian besar. Percayalah — ada sesuatu yang lebih bermakna menantimu." },
+    { name: "Sembilan Cangkir", numeral: "IX", emoji: "😊", suit: "Cangkir", keywords: ["Kepuasan", "Kebahagiaan", "Keinginan Terkabul"], meaning: "Keinginanmu sedang atau akan segera terkabul! Nikmati momen kebahagiaan ini. Kamu layak mendapatkan semua hal baik yang datang." },
+    { name: "Sepuluh Cangkir", numeral: "X", emoji: "🌈", suit: "Cangkir", keywords: ["Harmoni", "Keluarga", "Kebahagiaan Sejati"], meaning: "Kebahagiaan sempurna dalam hubungan dan keluarga. Cinta yang tulus mengelilingimu. Ini adalah berkah yang patut disyukuri." },
+    { name: "Halaman Cangkir", numeral: "Halaman", emoji: "💌", suit: "Cangkir", keywords: ["Pesan Cinta", "Kreativitas", "Perasaan Baru"], meaning: "Pesan menyenangkan atau perasaan baru sedang dalam perjalanan. Buka hatimu untuk kejutan manis dari alam semesta." },
+    { name: "Ksatria Cangkir", numeral: "Ksatria", emoji: "🦢", suit: "Cangkir", keywords: ["Romantis", "Pesona", "Undangan"], meaning: "Seseorang atau sesuatu yang penuh pesona memasuki hidupmu. Ikuti hatimu dengan keanggunan dan ketulusan." },
+    { name: "Ratu Cangkir", numeral: "Ratu", emoji: "👸", suit: "Cangkir", keywords: ["Empati", "Kasih", "Intuisi"], meaning: "Jadilah seperti air — mengalir, menyembuhkan, dan penuh kasih. Intuisimu sangat kuat sekarang." },
+    { name: "Raja Cangkir", numeral: "Raja", emoji: "🧔", suit: "Cangkir", keywords: ["Kebijaksanaan Emosi", "Diplomasi", "Kendali Hati"], meaning: "Kendalikan emosimu dengan bijak tanpa menekannya. Keseimbangan antara hati dan pikiran adalah kekuatan terbesarmu." },
+
+    // ======= MINOR ARCANA - PEDANG / Swords (14 kartu) =======
+    { name: "As Pedang", numeral: "As", emoji: "🗡️", suit: "Pedang", keywords: ["Kejelasan", "Terobosan", "Kebenaran"], meaning: "Kejelasan pikiran hadir untukmu. Gunakan logika dan kejujuran untuk memotong kebingungan. Perspektif segar akan mencerahkan jalanmu." },
+    { name: "Dua Pedang", numeral: "II", emoji: "🤔", suit: "Pedang", keywords: ["Dilema", "Keputusan", "Keseimbangan"], meaning: "Kamu berada di persimpangan dan menolak untuk memilih. Namun keputusan harus dibuat — percayalah pada dirimu sendiri." },
+    { name: "Tiga Pedang", numeral: "III", emoji: "💔", suit: "Pedang", keywords: ["Patah Hati", "Duka", "Pelajaran"], meaning: "Rasa sakit yang kamu rasakan itu nyata, tapi bersifat sementara. Dari luka ini kamu belajar hal berharga." },
+    { name: "Empat Pedang", numeral: "IV", emoji: "🧘", suit: "Pedang", keywords: ["Istirahat", "Meditasi", "Pemulihan"], meaning: "Tubuh dan jiwamu membutuhkan istirahat. Berhenti sejenak bukan berarti menyerah. Pulihkan energimu." },
+    { name: "Lima Pedang", numeral: "V", emoji: "😈", suit: "Pedang", keywords: ["Konflik", "Kecurangan", "Kekalahan"], meaning: "Hati-hati dengan konflik yang tidak perlu. Menang dengan cara curang bukan kemenangan sejati. Pilihlah integritas." },
+    { name: "Enam Pedang", numeral: "VI", emoji: "⛵", suit: "Pedang", keywords: ["Transisi", "Perjalanan", "Meninggalkan"], meaning: "Kamu sedang dalam perjalanan menuju tempat yang lebih baik. Tinggalkan masa sulit dengan damai. Air yang tenang menanti di depan." },
+    { name: "Tujuh Pedang", numeral: "VII", emoji: "🦊", suit: "Pedang", keywords: ["Strategi", "Kecerdikan", "Hati-hati"], meaning: "Gunakan kecerdasanmu, tapi jaga kejujuran. Strategi yang baik tidak memerlukan tipu daya. Waspadalah terhadap niat tersembunyi." },
+    { name: "Delapan Pedang", numeral: "VIII", emoji: "🙈", suit: "Pedang", keywords: ["Terjebak", "Keterbatasan", "Ketakutan"], meaning: "Kamu merasa terjebak, tapi belenggu itu lebih lemah dari yang kamu kira. Buka matamu — jalan keluar ada tepat di depanmu." },
+    { name: "Sembilan Pedang", numeral: "IX", emoji: "😰", suit: "Pedang", keywords: ["Kecemasan", "Kekhawatiran", "Mimpi Buruk"], meaning: "Ketakutanmu lebih besar dari kenyataannya. Jangan biarkan pikiran negatif menguasaimu. Pagi selalu datang setelah malam gelap." },
+    { name: "Sepuluh Pedang", numeral: "X", emoji: "🏳️", suit: "Pedang", keywords: ["Akhir", "Titik Terendah", "Kebangkitan"], meaning: "Ini adalah titik terendah, tapi juga titik balik. Dari sini, satu-satunya arah adalah naik. Lepaskan dan mulai lagi." },
+    { name: "Halaman Pedang", numeral: "Halaman", emoji: "🕵️", suit: "Pedang", keywords: ["Rasa Ingin Tahu", "Ide Baru", "Waspada"], meaning: "Pikiran tajam dan rasa ingin tahumu adalah aset. Selidiki sebelum bertindak. Kebenaran akan terungkap bagi yang mau mencari." },
+    { name: "Ksatria Pedang", numeral: "Ksatria", emoji: "💨", suit: "Pedang", keywords: ["Cepat", "Tegas", "Ambisius"], meaning: "Bertindaklah cepat dan tegas, tapi jangan terburu-buru hingga ceroboh. Kecepatan tanpa arah hanya membuang energi." },
+    { name: "Ratu Pedang", numeral: "Ratu", emoji: "🗣️", suit: "Pedang", keywords: ["Kejujuran", "Ketajaman", "Kemandirian"], meaning: "Bicaralah dengan jujur dan tegas. Pikiranmu jernih — gunakan untuk memotong ilusi. Kemandirian adalah kekuatanmu." },
+    { name: "Raja Pedang", numeral: "Raja", emoji: "🧠", suit: "Pedang", keywords: ["Otoritas Intelektual", "Logika", "Ketegasan"], meaning: "Gunakan pikiranmu yang tajam untuk membuat keputusan penting. Pimpin dengan kebijaksanaan dan keadilan." },
+
+    // ======= MINOR ARCANA - TONGKAT / Wands (14 kartu) =======
+    { name: "As Tongkat", numeral: "As", emoji: "🔥", suit: "Tongkat", keywords: ["Inspirasi", "Potensi", "Semangat Baru"], meaning: "Api semangat baru menyala dalam dirimu! Ide-ide kreatif dan peluang menanti. Ambil inisiatif dengan penuh gairah." },
+    { name: "Dua Tongkat", numeral: "II", emoji: "🌐", suit: "Tongkat", keywords: ["Perencanaan", "Keputusan", "Visi"], meaning: "Kamu memiliki dunia di tanganmu. Rencanakan langkahmu dengan visi yang jelas. Keputusan yang baik dimulai dari perspektif yang luas." },
+    { name: "Tiga Tongkat", numeral: "III", emoji: "🚀", suit: "Tongkat", keywords: ["Ekspansi", "Visi", "Kemajuan"], meaning: "Rencana-rencanamu mulai membuahkan hasil. Pandanglah lebih jauh ke cakrawala. Kerja kerasmu akan membuka pintu-pintu baru." },
+    { name: "Empat Tongkat", numeral: "IV", emoji: "🏠", suit: "Tongkat", keywords: ["Perayaan", "Harmoni", "Fondasi"], meaning: "Rayakan pencapaianmu! Fondasi yang kuat telah kamu bangun. Nikmati stabilitas dan kehangatan yang telah kamu ciptakan." },
+    { name: "Lima Tongkat", numeral: "V", emoji: "🤼", suit: "Tongkat", keywords: ["Kompetisi", "Konflik", "Pertumbuhan"], meaning: "Persaingan bisa menjadi bahan bakar pertumbuhan. Jangan takut berkompetisi, tapi tetap sportif. Tantangan ini membuatmu lebih kuat." },
+    { name: "Enam Tongkat", numeral: "VI", emoji: "🏅", suit: "Tongkat", keywords: ["Kemenangan", "Pengakuan", "Kebanggaan"], meaning: "Kemenanganmu diakui! Terima pujian dengan rendah hati. Kamu telah bekerja keras dan layak mendapatkan penghargaan ini." },
+    { name: "Tujuh Tongkat", numeral: "VII", emoji: "🛡️", suit: "Tongkat", keywords: ["Bertahan", "Keberanian", "Tekad"], meaning: "Kamu sedang menghadapi banyak tantangan, tapi jangan menyerah. Pertahankan posisimu. Tekadmu akan membuahkan hasil." },
+    { name: "Delapan Tongkat", numeral: "VIII", emoji: "✈️", suit: "Tongkat", keywords: ["Kecepatan", "Pergerakan", "Momentum"], meaning: "Segala sesuatu bergerak dengan cepat! Tangkap momentum ini. Perubahan positif terjadi lebih cepat dari yang kamu duga." },
+    { name: "Sembilan Tongkat", numeral: "IX", emoji: "🏋️", suit: "Tongkat", keywords: ["Ketahanan", "Kewaspadaan", "Kekuatan"], meaning: "Kamu telah melewati banyak hal dan mungkin merasa lelah. Tapi kamu lebih tangguh dari yang kamu sadari. Bertahanlah sedikit lagi." },
+    { name: "Sepuluh Tongkat", numeral: "X", emoji: "🎒", suit: "Tongkat", keywords: ["Beban", "Tanggung Jawab", "Ketekunan"], meaning: "Kamu menanggung banyak beban, tapi jangan menyerah. Delegasikan jika perlu — tujuan akhirnya sudah dekat." },
+    { name: "Halaman Tongkat", numeral: "Halaman", emoji: "🌱", suit: "Tongkat", keywords: ["Antusiasme", "Eksplorasi", "Penemuan"], meaning: "Semangat muda dan rasa ingin tahu memandumu. Jelajahi ide-ide baru tanpa takut gagal. Setiap awal membawa keajaiban." },
+    { name: "Ksatria Tongkat", numeral: "Ksatria", emoji: "🐎", suit: "Tongkat", keywords: ["Petualangan", "Energi", "Hasrat"], meaning: "Semangat petualangan memanggilmu! Jangan ragu untuk mengejar hasratmu. Energimu menular — gunakan untuk inspirasi." },
+    { name: "Ratu Tongkat", numeral: "Ratu", emoji: "🌻", suit: "Tongkat", keywords: ["Percaya Diri", "Karisma", "Determinasi"], meaning: "Pancaran kepercayaan dirimu menarik hal-hal positif. Pimpin dengan semangat dan keberanian. Karismamu adalah kekuatan magis." },
+    { name: "Raja Tongkat", numeral: "Raja", emoji: "🦅", suit: "Tongkat", keywords: ["Kepemimpinan", "Visi", "Entrepreneur"], meaning: "Kamu memiliki visi yang besar dan kemampuan untuk mewujudkannya. Pimpin dengan inspirasi. Dunia membutuhkan pemimpin sepertimu." },
+
+    // ======= MINOR ARCANA - KOIN / Pentacles (14 kartu) =======
+    { name: "As Koin", numeral: "As", emoji: "💰", suit: "Koin", keywords: ["Peluang Materi", "Kemakmuran", "Awal Baru"], meaning: "Peluang finansial atau materi sedang menghampiri. Tanam benih investasi untuk masa depanmu." },
+    { name: "Dua Koin", numeral: "II", emoji: "🎭", suit: "Koin", keywords: ["Keseimbangan", "Adaptasi", "Fleksibilitas"], meaning: "Hidupmu membutuhkan keseimbangan. Belajar untuk menyesuaikan prioritasmu. Fleksibilitas adalah kunci keberhasilan." },
+    { name: "Tiga Koin", numeral: "III", emoji: "🤝", suit: "Koin", keywords: ["Kolaborasi", "Keterampilan", "Kerja Tim"], meaning: "Kerja sama tim akan membawa hasil luar biasa. Keterampilanmu dihargai. Bersama-sama, kalian bisa mencapai lebih banyak." },
+    { name: "Empat Koin", numeral: "IV", emoji: "🏦", suit: "Koin", keywords: ["Keamanan", "Kontrol", "Hemat"], meaning: "Kamu bijak menjaga sumber dayamu, tapi jangan terlalu kaku. Temukan keseimbangan antara menabung dan berbagi." },
+    { name: "Lima Koin", numeral: "V", emoji: "🥶", suit: "Koin", keywords: ["Kesulitan", "Kemiskinan", "Isolasi"], meaning: "Masa sulit ini bersifat sementara. Carilah bantuan — kamu tidak harus menghadapinya sendiri. Pintu pertolongan selalu terbuka." },
+    { name: "Enam Koin", numeral: "VI", emoji: "🎁", suit: "Koin", keywords: ["Kemurahan", "Berbagi", "Keseimbangan Memberi"], meaning: "Memberi dan menerima harus seimbang. Kemurahan hatimu mendatangkan berkah. Bagikan apa yang kamu punya dengan tulus." },
+    { name: "Tujuh Koin", numeral: "VII", emoji: "🌾", suit: "Koin", keywords: ["Kesabaran", "Investasi", "Menunggu Hasil"], meaning: "Benih yang kamu tanam butuh waktu untuk tumbuh. Bersabarlah — hasil panen akan datang pada waktunya." },
+    { name: "Delapan Koin", numeral: "VIII", emoji: "⚒️", suit: "Koin", keywords: ["Dedikasi", "Ketekunan", "Penguasaan"], meaning: "Tekun dan disiplin dalam mengasah kemampuanmu. Kerja keras yang konsisten akan menghasilkan mahakarya." },
+    { name: "Sembilan Koin", numeral: "IX", emoji: "🍷", suit: "Koin", keywords: ["Kemewahan", "Kemandirian", "Pencapaian"], meaning: "Kamu telah mencapai tingkat kenyamanan dan kemandirian. Nikmati buah kerja kerasmu — kamu pantas mendapatkannya." },
+    { name: "Sepuluh Koin", numeral: "X", emoji: "🏡", suit: "Koin", keywords: ["Kekayaan", "Warisan", "Keluarga"], meaning: "Kemakmuran jangka panjang menanti. Ini tentang membangun warisan dan fondasi keluarga yang kuat." },
+    { name: "Halaman Koin", numeral: "Halaman", emoji: "📚", suit: "Koin", keywords: ["Belajar", "Peluang", "Tekun"], meaning: "Peluang belajar dan bertumbuh ada di hadapanmu. Tekuni keterampilanmu dengan kesabaran." },
+    { name: "Ksatria Koin", numeral: "Ksatria", emoji: "🐂", suit: "Koin", keywords: ["Kerja Keras", "Rutin", "Tanggung Jawab"], meaning: "Kerja keras dan konsistensi adalah jalanmu menuju sukses. Nikmati prosesnya — perjalanan sama pentingnya dengan tujuan." },
+    { name: "Ratu Koin", numeral: "Ratu", emoji: "🌺", suit: "Koin", keywords: ["Pemeliharaan", "Praktis", "Kemakmuran"], meaning: "Rawat kehidupanmu dengan cinta dan kebijaksanaan praktis. Kelimpahan datang dari merawat apa yang sudah kamu miliki." },
+    { name: "Raja Koin", numeral: "Raja", emoji: "🦉", suit: "Koin", keywords: ["Kemakmuran", "Keamanan", "Kebijaksanaan Finansial"], meaning: "Kebijaksanaan finansialmu adalah aset terbesar. Kelola sumber dayamu dengan bijak. Kestabilan yang kamu bangun akan bertahan lama." },
+];
+
+// ===== POSITION LABELS =====
+const positionLabels = {
+    1: ["Pesanmu"],
+    3: ["Masa Lalu", "Masa Kini", "Masa Depan"],
+    5: ["Situasi", "Tantangan", "Masa Lalu", "Masa Depan", "Hasil"]
+};
+
+// ===== STATE =====
+let currentSpread = 1;
+let pickedCards = [];
+let shuffledDeck = [];
+let flippedCount = 0;
+let audioCtx = null;
+
+// ===== STARS =====
+function initStars() {
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let shootingStars = [];
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+
+    function createStars() {
+        stars = [];
+        for (let i = 0; i < 180; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                pulse: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+            s.pulse += 0.02;
+            const tw = (Math.sin(s.pulse) + 1) / 2;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,240,${0.3 + tw * 0.7})`;
+            ctx.fill();
+        });
+        if (Math.random() < 0.003) {
+            shootingStars.push({ x: Math.random() * canvas.width, y: 0, length: Math.random() * 80 + 40, speed: Math.random() * 8 + 6, angle: Math.PI / 4 + Math.random() * 0.3, opacity: 1 });
+        }
+        shootingStars = shootingStars.filter(ss => {
+            ss.x += Math.cos(ss.angle) * ss.speed;
+            ss.y += Math.sin(ss.angle) * ss.speed;
+            ss.opacity -= 0.015;
+            if (ss.opacity <= 0) return false;
+            const g = ctx.createLinearGradient(ss.x, ss.y, ss.x - Math.cos(ss.angle) * ss.length, ss.y - Math.sin(ss.angle) * ss.length);
+            g.addColorStop(0, `rgba(255,255,240,${ss.opacity})`);
+            g.addColorStop(1, 'rgba(255,255,240,0)');
+            ctx.beginPath();
+            ctx.moveTo(ss.x, ss.y);
+            ctx.lineTo(ss.x - Math.cos(ss.angle) * ss.length, ss.y - Math.sin(ss.angle) * ss.length);
+            ctx.strokeStyle = g;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            return true;
+        });
+        requestAnimationFrame(animate);
+    }
+    resize(); createStars(); animate();
+    window.addEventListener('resize', () => { resize(); createStars(); });
+}
+
+// ===== SOUND =====
+function playSound(type) {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        if (type === 'flip') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === 'pick') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        } else if (type === 'unpick') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+        } else if (type === 'shuffle') {
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.4);
+            gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        } else if (type === 'reveal') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1400, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+        }
+    } catch(e) {}
+}
+
+// ===== PARTICLES =====
+function createParticles(x, y) {
+    for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        document.body.appendChild(p);
+        const angle = Math.random() * Math.PI * 2;
+        const vel = Math.random() * 80 + 40;
+        const sz = Math.random() * 4 + 1;
+        p.style.cssText = `left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${Math.random()>.5?'#d4a853':'#f0d890'}`;
+        const anim = p.animate([
+            { opacity: 1, transform: 'translate(0,0) scale(1)' },
+            { opacity: 0, transform: `translate(${Math.cos(angle)*vel}px,${Math.sin(angle)*vel}px) scale(0)` }
+        ], { duration: 700 + Math.random() * 300, easing: 'ease-out' });
+        anim.onfinish = () => p.remove();
+    }
+}
+
+// ===== SELECT SPREAD =====
+function selectSpread(num) {
+    currentSpread = num;
+    document.querySelectorAll('.spread-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.spread) === num);
+    });
+}
+
+// ===== PHASE MANAGEMENT =====
+function showPhase(n) {
+    document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+    document.getElementById('phase' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== START PICKING =====
+function startPicking() {
+    playSound('shuffle');
+    pickedCards = [];
+    flippedCount = 0;
+
+    // Shuffle the deck
+    shuffledDeck = [...tarotDeck].sort(() => Math.random() - 0.5);
+
+    // Build card pool
+    const pool = document.getElementById('cardPool');
+    pool.innerHTML = '';
+
+    const symbols = ['✦', '✧', '⬥', '◈', '❖', '✤', '✥', '⟡'];
+
+    shuffledDeck.forEach((card, index) => {
+        const el = document.createElement('div');
+        el.className = 'pool-card';
+        el.style.animation = `popIn 0.4s ease ${index * 0.015}s both`;
+        el.dataset.index = index;
+        el.onclick = () => togglePick(el, index);
+
+        const sym = symbols[index % symbols.length];
+        el.innerHTML = `
+            <div class="pool-card__face">
+                <div class="pool-card__symbol">${sym}</div>
+                <div class="pool-card__number">${index + 1}</div>
+            </div>
+            <div class="pick-badge"></div>
+        `;
+        pool.appendChild(el);
+    });
+
+    updatePickUI();
+    showPhase(2);
+}
+
+// ===== TOGGLE PICK =====
+function togglePick(el, index) {
+    const alreadyPicked = pickedCards.findIndex(p => p.index === index);
+
+    if (alreadyPicked !== -1) {
+        // Unpick
+        pickedCards.splice(alreadyPicked, 1);
+        el.classList.remove('picked');
+        playSound('unpick');
+    } else {
+        if (pickedCards.length >= currentSpread) {
+            // Already at max — shake the card
+            el.style.animation = 'none';
+            el.offsetHeight; // force reflow
+            el.style.animation = '';
+            return;
+        }
+        // Pick
+        pickedCards.push({ index, card: shuffledDeck[index] });
+        el.classList.add('picked');
+        playSound('pick');
+
+        // Particles
+        const rect = el.getBoundingClientRect();
+        createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
+
+    // Update badges
+    document.querySelectorAll('.pool-card.picked .pick-badge').forEach((badge, i) => {
+        badge.textContent = i + 1;
+    });
+
+    updatePickUI();
+}
+
+// ===== UPDATE PICK UI =====
+function updatePickUI() {
+    const labels = { 1: 'satu', 3: 'tiga', 5: 'lima' };
+    document.getElementById('pickTitle').textContent = `✦ Pilih ${labels[currentSpread]} kartu yang memanggilmu ✦`;
+    document.getElementById('pickCounter').innerHTML = `Kartu dipilih: <span>${pickedCards.length}</span> / <span>${currentSpread}</span>`;
+
+    const btn = document.getElementById('btnConfirm');
+    btn.disabled = pickedCards.length !== currentSpread;
+
+    // Disable remaining cards when max reached
+    document.querySelectorAll('.pool-card').forEach(card => {
+        if (!card.classList.contains('picked') && pickedCards.length >= currentSpread) {
+            card.classList.add('disabled');
+        } else {
+            card.classList.remove('disabled');
+        }
+    });
+}
+
+// ===== CONFIRM SELECTION =====
+function confirmSelection() {
+    if (pickedCards.length !== currentSpread) return;
+
+    playSound('reveal');
+
+    // Transition: fade out unpicked cards
+    document.querySelectorAll('.pool-card:not(.picked)').forEach((card, i) => {
+        setTimeout(() => card.classList.add('fade-out'), i * 5);
+    });
+
+    setTimeout(() => {
+        showPhase(3);
+        buildRevealCards();
+    }, 600);
+}
+
+// ===== BUILD REVEAL CARDS =====
+function buildRevealCards() {
+    const preview = document.getElementById('selectedPreview');
+    preview.innerHTML = '';
+    flippedCount = 0;
+
+    const labels = positionLabels[currentSpread];
+
+    pickedCards.forEach((picked, i) => {
+        const card = picked.card;
+        const el = document.createElement('div');
+        el.className = 'reveal-card';
+        el.style.animation = `popIn 0.5s ease ${i * 0.15}s both`;
+        el.dataset.pickIndex = i;
+        el.onclick = () => flipRevealCard(el, i);
+
+        el.innerHTML = `
+            <div class="reveal-card__inner">
+                <div class="reveal-card__face reveal-card__back">
+                    <div class="reveal-card__back-symbol">✦</div>
+                </div>
+                <div class="reveal-card__face reveal-card__front">
+                    <div class="reveal-card__emoji">${card.emoji}</div>
+                    <div class="reveal-card__name">${card.name}</div>
+                    <div class="reveal-card__numeral">${card.numeral}</div>
+                </div>
+            </div>
+            <div class="reveal-card__position">${labels[i]}</div>
+        `;
+        preview.appendChild(el);
+    });
+
+    document.getElementById('revealInstruction').textContent = '✦ Klik kartu untuk membuka ramalanmu ✦';
+    document.getElementById('btnRevealAll').style.display = 'inline-block';
+}
+
+// ===== FLIP REVEAL CARD =====
+function flipRevealCard(el, index) {
+    if (el.classList.contains('flipped')) return;
+
+    el.classList.add('flipped');
+    flippedCount++;
+    playSound('flip');
+
+    const rect = el.getBoundingClientRect();
+    createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+    if (flippedCount === currentSpread) {
+        document.getElementById('btnRevealAll').style.display = 'none';
+        document.getElementById('revealInstruction').textContent = '✦ Semua kartu telah terbuka ✦';
+        setTimeout(showReading, 800);
+    }
+}
+
+// ===== REVEAL ALL =====
+function revealAllCards() {
+    const cards = document.querySelectorAll('.reveal-card:not(.flipped)');
+    cards.forEach((card, i) => {
+        setTimeout(() => {
+            const idx = parseInt(card.dataset.pickIndex);
+            flipRevealCard(card, idx);
+        }, i * 300);
+    });
+}
+
+// ===== SHOW READING =====
+function showReading() {
+    const loading = document.getElementById('loadingOracle');
+    loading.classList.add('active');
+
+    setTimeout(() => {
+        loading.classList.remove('active');
+
+        const result = document.getElementById('readingResult');
+        const labels = positionLabels[currentSpread];
+
+        let html = `<h2 class="reading-result__title">✦ Hasil Bacaan Tarotmu ✦</h2>`;
+
+        pickedCards.forEach((picked, index) => {
+            const card = picked.card;
+            html += `
+                <div class="reading-card" style="animation: fadeInUp 0.6s ease ${index * 0.2}s both;">
+                    <div class="reading-card__header">
+                        <div class="reading-card__icon">${card.emoji}</div>
+                        <div class="reading-card__meta">
+                            <div class="reading-card__position">${labels[index]}</div>
+                            <div class="reading-card__card-name">${card.name}</div>
+                        </div>
+                    </div>
+                    <div class="reading-card__divider"></div>
+                    <p class="reading-card__meaning">${card.meaning}</p>
+                    <div class="reading-card__keywords">
+                        ${card.keywords.map(k => `<span class="keyword-tag">${k}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        const msgs = [
+            "Alam semesta mengirimkan pesan bahwa kamu sedang dalam perjalanan transformasi. Percayalah pada prosesnya, karena setiap langkah membawamu lebih dekat ke tujuan jiwamu.",
+            "Kartu-kartumu menunjukkan bahwa energi perubahan mengelilingimu. Lepaskan yang lama dengan penuh rasa syukur, dan sambut yang baru dengan keberanian.",
+            "Pesannya jelas: dengarkan intuisimu dan jangan abaikan tanda-tanda kecil di sekitarmu. Kebijaksanaan batinmu adalah kompas terbaikmu.",
+            "Kombinasi kartumu menunjukkan fase pertumbuhan yang mendalam. Hal-hal yang terasa sulit saat ini sebenarnya adalah batu loncatan menuju versi terbaikmu.",
+            "Ada harmoni tersembunyi dalam bacaanmu. Meskipun beberapa area mungkin terasa kacau, ada benang merah yang menghubungkan segalanya. Percayalah — semuanya terjadi untuk alasan yang indah."
+        ];
+
+        html += `
+            <div class="overall-reading">
+                <h3 class="overall-reading__title">🌟 Pesan dari Alam Semesta 🌟</h3>
+                <p class="overall-reading__text">"${msgs[Math.floor(Math.random() * msgs.length)]}"</p>
+            </div>
+        `;
+
+        result.innerHTML = html;
+        requestAnimationFrame(() => {
+            result.classList.add('visible');
+            document.getElementById('resetArea').style.display = 'block';
+            result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }, 2000);
+}
+
+// ===== RESET =====
+function resetAll() {
+    pickedCards = [];
+    flippedCount = 0;
+    shuffledDeck = [];
+    document.getElementById('cardPool').innerHTML = '';
+    document.getElementById('selectedPreview').innerHTML = '';
+    document.getElementById('readingResult').innerHTML = '';
+    document.getElementById('readingResult').classList.remove('visible');
+    document.getElementById('resetArea').style.display = 'none';
+    document.getElementById('loadingOracle').classList.remove('active');
+    document.getElementById('btnRevealAll').style.display = 'inline-block';
+    showPhase(1);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+    initStars();
+});
+</script>
+</body>
+</html>
